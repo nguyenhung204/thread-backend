@@ -75,6 +75,12 @@ export class User {
     role : string;
 
     @Prop()
+    codeId: string;
+
+    @Prop()
+    codeExpire: Date;
+
+    @Prop()
     refreshToken: string;
 }
 export const UserSchema = SchemaFactory.createForClass(User);

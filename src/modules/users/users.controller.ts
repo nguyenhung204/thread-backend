@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Public } from '@/decorater/custom';
 
 @Controller('users')
 export class UsersController {
@@ -15,6 +16,7 @@ export class UsersController {
     }
 
   @Get()
+  @Public() 
   async getAllUsers(
     @Query() query: string,
     @Query('current') current: string,

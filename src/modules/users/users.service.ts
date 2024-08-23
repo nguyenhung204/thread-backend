@@ -6,6 +6,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { hashPasswordHelper } from '@/helper/utils';
 import aqp from 'api-query-params';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { v4 as uuidv4 } from 'uuid';
+import  dayjs from 'dayjs';
+import { use } from 'passport';
 
 
 @Injectable()
@@ -71,5 +75,41 @@ export class UsersService {
         else{
             throw new BadRequestException('Invalid _id');
         }
+    }
+
+    async handleRegister(registerDto : CreateAuthDto) {
+        const {username, password, email, name} = registerDto;
+
+        const isUsernameExist = await this.userModel.exists({username});
+        if (isUsernameExist) {
+           throw new BadRequestException(`Username ${username} already exist :(`);
+        }
+
+
+        //check email exist
+        const isExist = await this.IsEmailExist(email);
+        if (isExist) {
+           throw new BadRequestException(`Email ${email} already exist :(`);
+        }
+        //hash password
+        const hashPass = await hashPasswordHelper(password);
+        
+        const newUser = await this.userModel.create({
+            username,
+            password: hashPass,
+            email,
+            name,
+            isActive : false,
+            codeId : uuidv4(),
+            codeExpire : dayjs().add(5, 'minute')
+        });
+
+        // return ping
+
+        return {
+            _id: newUser._id,
+        }
+
+        
     }
 }
